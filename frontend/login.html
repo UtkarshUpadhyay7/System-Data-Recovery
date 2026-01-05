@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | System Data Recovery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body{
+  height:100vh;
+  background: linear-gradient(120deg,#020617,#0f172a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  overflow:hidden;
+}
+
+/* BACKGROUND GLOW */
+.bg-circle{
+  position:absolute;
+  width:400px;
+  height:400px;
+  background:#38bdf8;
+  filter:blur(150px);
+  opacity:0.3;
+  animation: float 6s infinite alternate;
+}
+
+@keyframes float{
+  from{ transform:translateY(-40px); }
+  to{ transform:translateY(40px); }
+}
+
+/* LOGIN CARD */
+.login-card{
+  width:380px;
+  background:#020617;
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 25px 50px rgba(0,0,0,0.7);
+  animation: popIn 0.8s ease;
+  z-index:1;
+}
+
+@keyframes popIn{
+  from{ transform:scale(0.8); opacity:0; }
+  to{ transform:scale(1); opacity:1; }
+}
+
+/* TITLE */
+.login-card h2{
+  text-align:center;
+  margin-bottom:8px;
+}
+
+.login-card p{
+  text-align:center;
+  color:#94a3b8;
+  font-size:14px;
+  margin-bottom:25px;
+}
+
+/* INPUTS */
+.input-group{
+  margin-bottom:18px;
+}
+
+.input-group label{
+  font-size:14px;
+  color:#cbd5f5;
+}
+
+.input-group input{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border:none;
+  outline:none;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+  font-size:15px;
+  transition:0.3s;
+}
+
+.input-group input:focus{
+  box-shadow:0 0 0 2px #38bdf8;
+}
+
+/* BUTTON */
+.login-btn{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#38bdf8;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.login-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* FOOTER */
+.footer-text{
+  text-align:center;
+  margin-top:20px;
+  font-size:13px;
+  color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-circle"></div>
+
+<div class="login-card">
+  <h2>Welcome Back</h2>
+  <p>Login to System Data Recovery</p>
+
+  <div class="input-group">
+    <label>Username</label>
+    <input type="text" id="username" placeholder="Enter username">
+  </div>
+
+  <div class="input-group">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
+  </div>
+
+  <button class="login-btn" onclick="login()">Login</button>
+
+  <div class="footer-text">
+    Private Cloud Recovery System
+  </div>
+</div>
+
+<script>
+function login(){
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+
+  if(user === "" || pass === ""){
+    alert("Please enter username and password");
+    return;
+  }
+
+  /* DEMO LOGIN (for final year) */
+  if(user === "admin" && pass === "admin123"){
+    window.location.href = "index.html";
+  }else{
+    alert("Invalid Credentials");
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+
+# Temporary uploads
+tmp/
+
+# MinIO data (cloud storage)
+minio-data/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

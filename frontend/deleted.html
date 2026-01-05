@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Deleted Files</title>
+</head>
+<body>
+
+<h2>Deleted Files</h2>
+
+<button onclick="loadDeleted()">Load Deleted Files</button>
+
+<ul id="deletedList"></ul>
+
+<br>
+<a href="index.html">Back</a>
+
+<script>
+function loadDeleted() {
+  fetch("http://localhost:3000/deleted")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("deletedList");
+      list.innerHTML = "";
+
+      data.forEach(f => {
+        list.innerHTML += `
+          <li>
+            ${f.filename}
+            <button onclick="recoverFile(${f.id})">Recover</button>
+          </li>`;
+      });
+    });
+}
+
+function recoverFile(id) {
+  fetch("http://localhost:3000/recover/" + id, {
+    method: "POST"
+  }).then(() => {
+    alert("File Recovered");
+    loadDeleted();
+  });
+}
+</script>
+
+</body>
+</html>

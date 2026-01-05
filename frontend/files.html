@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Active Files</title>
+</head>
+<body>
+
+<h2>Active Files</h2>
+
+<button onclick="loadFiles()">Load Files</button>
+
+<ul id="fileList"></ul>
+
+<br>
+<a href="index.html">Back</a>
+
+<script>
+function loadFiles() {
+  fetch("http://localhost:3000/files")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("fileList");
+      list.innerHTML = "";
+
+      data.forEach(f => {
+        list.innerHTML += `
+          <li>
+            ${f.filename}
+            <button onclick="deleteFile(${f.id})">Delete</button>
+          </li>`;
+      });
+    });
+}
+
+function deleteFile(id) {
+  fetch("http://localhost:3000/delete/" + id, {
+    method: "POST"
+  }).then(() => {
+    alert("File Deleted");
+    loadFiles();
+  });
+}
+</script>
+
+</body>
+</html>

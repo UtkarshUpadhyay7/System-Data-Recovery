@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>System Data Recovery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body{
+  background: linear-gradient(120deg,#0f172a,#020617);
+  color:white;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-40px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(40px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@keyframes pop {
+  from { transform:scale(0.9); opacity:0; }
+  to { transform:scale(1); opacity:1; }
+}
+
+/* ================= HERO ================= */
+.hero{
+  padding:40px;
+  text-align:center;
+  animation: fadeDown 1s ease;
+}
+
+.hero h1{
+  font-size:2.6rem;
+  margin-bottom:10px;
+}
+
+.hero p{
+  color:#cbd5f5;
+}
+
+/* ================= CARD ================= */
+.card{
+  max-width:1000px;
+  margin:30px auto;
+  background:#020617;
+  border-radius:18px;
+  padding:30px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
+  animation: pop 0.9s ease;
+}
+
+/* ================= UPLOAD ================= */
+.upload-box{
+  border:2px dashed #334155;
+  padding:25px;
+  text-align:center;
+  border-radius:14px;
+  transition:0.3s;
+}
+
+.upload-box:hover{
+  border-color:#38bdf8;
+  background:#020617;
+}
+
+/* ================= SECTIONS ================= */
+.section{
+  margin-top:35px;
+  animation: fadeUp 1s ease;
+}
+
+.section h2{
+  margin-bottom:12px;
+  border-left:4px solid #38bdf8;
+  padding-left:12px;
+}
+
+/* ================= FILE LIST ================= */
+ul{
+  list-style:none;
+}
+
+li{
+  background:#0f172a;
+  padding:12px 16px;
+  margin-bottom:12px;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  animation: fadeUp 0.4s ease;
+  transition:0.2s;
+}
+
+li:hover{
+  transform:scale(1.02);
+}
+
+/* ================= BUTTONS ================= */
+button{
+  padding:7px 16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.2s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 15px rgba(0,0,0,0.4);
+}
+
+.load{
+  background:#38bdf8;
+  margin-bottom:12px;
+}
+
+.delete{
+  background:#ef4444;
+  color:white;
+}
+
+.recover{
+  background:#22c55e;
+  color:black;
+}
+
+/* ================= FOOTER ================= */
+footer{
+  text-align:center;
+  color:#94a3b8;
+  margin-top:30px;
+  font-size:14px;
+  animation: fadeUp 1s ease;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>System Data Recovery</h1>
+  <p>Private Cloud Based File Backup & Recovery System</p>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card">
+
+  <!-- UPLOAD -->
+  <div class="upload-box">
+    <h2>Upload File</h2>
+    <form action="http://localhost:3000/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <br><br>
+      <button class="load" type="submit">Upload</button>
+    </form>
+  </div>
+
+  <!-- ACTIVE FILES -->
+  <div class="section">
+    <h2>Active Files</h2>
+    <button class="load" onclick="loadFiles()">Load Files</button>
+    <ul id="files"></ul>
+  </div>
+
+  <!-- DELETED FILES -->
+  <div class="section">
+    <h2>Deleted Files (Recovery)</h2>
+    <button class="load" onclick="loadDeleted()">Load Deleted</button>
+    <ul id="deleted"></ul>
+  </div>
+
+</div>
+
+<footer>
+  © Final Year Project | System Data Recovery Using Private Cloud
+</footer>
+
+<script>
+// LOAD ACTIVE FILES
+function loadFiles(){
+  fetch("http://localhost:3000/files")
+    .then(res => res.json())
+    .then(data => {
+      const ul = document.getElementById("files");
+      ul.innerHTML = "";
+      data.forEach(f => {
+        ul.innerHTML += `
+          <li>
+            ${f.filename}
+            <button class="delete" onclick="deleteFile(${f.id})">Delete</button>
+          </li>`;
+      });
+    });
+}
+
+// DELETE FILE
+function deleteFile(id){
+  fetch("http://localhost:3000/delete/" + id, { method: "POST" })
+    .then(() => {
+      setTimeout(() => {
+        loadFiles();
+        loadDeleted();
+      }, 200);
+    });
+}
+
+// LOAD DELETED FILES
+function loadDeleted(){
+  fetch("http://localhost:3000/deleted")
+    .then(res => res.json())
+    .then(data => {
+      const ul = document.getElementById("deleted");
+      ul.innerHTML = "";
+      data.forEach(f => {
+        ul.innerHTML += `
+          <li>
+            ${f.filename}
+            <button class="recover" onclick="recoverFile(${f.id})">Recover</button>
+          </li>`;
+      });
+    });
+}
+
+// RECOVER FILE
+function recoverFile(id){
+  fetch("http://localhost:3000/recover/" + id, { method: "POST" })
+    .then(() => {
+      setTimeout(() => {
+        loadFiles();
+        loadDeleted();
+      }, 200);
+    });
+}
+</script>
+
+</body>
+</html>
