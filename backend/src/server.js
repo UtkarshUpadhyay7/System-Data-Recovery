@@ -82,15 +82,65 @@ app.post("/delete/:id", (req, res) => {
 });
 
 /* ================= RECOVER FILE ================= */
+// app.post("/recover/:id", (req, res) => {
+//   const id = req.params.id;
+
+//   db.query(
+//     "UPDATE files SET status='active', recovery_count=recovery_count+1 WHERE id=?",
+//     [id],
+//     () => res.send("♻ File recovered successfully")
+//   );
+// });
 app.post("/recover/:id", (req, res) => {
   const id = req.params.id;
+
+  const startTime = Date.now(); // RTO start
 
   db.query(
     "UPDATE files SET status='active', recovery_count=recovery_count+1 WHERE id=?",
     [id],
-    () => res.send("♻ File recovered successfully")
+    () => {
+      const endTime = Date.now(); // RTO end
+      const rto = endTime - startTime;
+
+      db.query(
+        "UPDATE files SET last_recovery_time_ms=? WHERE id=?",
+        [rto, id]
+      );
+
+      res.send(`♻ File recovered successfully | RTO = ${rto} ms`);
+    }
   );
 });
+
+
+/* ================= RPO METRICS ================= */
+app.get("/metrics/rpo", (req, res) => {
+  db.query(
+    "SELECT MAX(uploaded_at) AS last_backup FROM files",
+    (err, rows) => {
+      if (err) {
+        return res.status(500).send("Error calculating RPO");
+      }
+
+      if (!rows[0].last_backup) {
+        return res.json({
+          rpo_ms: 0,
+          message: "No files uploaded yet"
+        });
+      }
+
+      const lastBackupTime = new Date(rows[0].last_backup);
+      const rpo = Date.now() - lastBackupTime.getTime();
+
+      res.json({
+        last_backup_time: lastBackupTime,
+        rpo_ms: rpo
+      });
+    }
+  );
+});
+
 
 /* ================= GET DELETED FILES ================= */
 app.get("/deleted", (req, res) => {

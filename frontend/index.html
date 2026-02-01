@@ -5,6 +5,8 @@
 <title>System Data Recovery</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
+
 <style>
 *{
   margin:0;
@@ -162,6 +164,31 @@ footer{
 <!-- MAIN CARD -->
 <div class="card">
 
+
+
+  <!-- ================= DISASTER RECOVERY METRICS ================= -->
+  <div id="dr-metrics" style="
+    margin-bottom:30px;
+    padding:18px;
+    border:1px solid #334155;
+    border-radius:14px;
+    background:#0f172a;
+  ">
+    <h2>📊 Disaster Recovery Metrics</h2>
+
+    <p><strong>Last Recovery Time (RTO):</strong>
+      <span id="rto-value">Loading...</span>
+    </p>
+
+    <p><strong>Current Recovery Point Objective (RPO):</strong>
+      <span id="rpo-value">Loading...</span>
+    </p>
+
+    <p><strong>Last Backup Time:</strong>
+      <span id="last-backup">Loading...</span>
+    </p>
+  </div>
+
   <!-- UPLOAD -->
   <div class="upload-box">
     <h2>Upload File</h2>
@@ -248,6 +275,62 @@ function recoverFile(id){
       }, 200);
     });
 }
+
+
+// ================= RPO METRICS =================
+async function loadRpoMetrics() {
+  try {
+    const res = await fetch("http://localhost:3000/metrics/rpo");
+    const data = await res.json();
+
+    document.getElementById("rpo-value").innerText =
+      data.rpo_ms + " ms";
+
+    document.getElementById("last-backup").innerText =
+      data.last_backup_time
+        ? new Date(data.last_backup_time).toLocaleString()
+        : "No backup yet";
+  } catch (e) {
+    document.getElementById("rpo-value").innerText = "Error";
+    document.getElementById("last-backup").innerText = "Error";
+  }
+}
+
+// ================= RTO METRICS =================
+async function loadLastRto() {
+  try {
+    const res = await fetch("http://localhost:3000/files");
+    const files = await res.json();
+
+    const recovered = files
+      .filter(f => f.last_recovery_time_ms !== null)
+      .sort((a, b) => b.last_recovery_time_ms - a.last_recovery_time_ms);
+
+    if (recovered.length > 0) {
+      document.getElementById("rto-value").innerText =
+        recovered[0].last_recovery_time_ms + " ms";
+    } else {
+      document.getElementById("rto-value").innerText =
+        "No recovery yet";
+    }
+  } catch (e) {
+    document.getElementById("rto-value").innerText = "Error";
+  }
+}
+
+// AUTO LOAD METRICS
+loadRpoMetrics();
+loadLastRto();
+
+
+
+
+
+
+
+
+
+
 </script>
 
 </body>
